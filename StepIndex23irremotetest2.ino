@@ -640,5 +640,5 @@ int read_LCD_button()     // routine to read the LCD's buttons
     irrecv.resume();
     
 }
-  delay(2000);
+  delay(100);
 }
