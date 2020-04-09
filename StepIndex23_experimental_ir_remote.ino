@@ -29,6 +29,7 @@ decode_results irResults;       // create instance of 'decode_results'
 volatile int irKeyValue ;       // returned from IR
 // IR end
 
+
 //  Next define your parameters about your motor and gearing
 
 #define StepsPerRevolution 200  // Change this to represent the number of steps
@@ -154,74 +155,19 @@ void setup()
   pinMode(motorSTEPpin, OUTPUT);     // set pin 3 to output
   pinMode(motorDIRpin, OUTPUT);      // set pin 2 to output
   pinMode(motorENABLEpin, OUTPUT);   // set pin 11 to output
+
+ // IR
+  pinMode( irReceiver , INPUT_PULLUP ) ;
+  irrecv.enableIRIn(); // Start the receiver
+ // IR end
+  
   digitalWrite(motorENABLEpin,HIGH); // power up the motor and leave it on
   
   displayscreen(cur_mode);           // put up initial menu screen
 
 }                                    // end of setup function
 
-// IR
-int translateIR() // takes action based on IR code received
-{
-  int rv = -1 ;     // assume failure
-
-  switch (irResults.value)
-  {
-    case 0xFF629D: rv = -10 ;      Serial.println(F(" UP ARROW")); break;
-    case 0xFF22DD: rv = -11 ;      Serial.println(F(" LEFT ARROW"));    break;
-    case 0xFF02FD: rv = -12 ;      Serial.println(F(" -OK-"));    break;
-    case 0xFFC23D: rv = -13 ;      Serial.println(F(" RIGHT ARROW"));   break;
-    case 0xFFA857: rv = -14 ;      Serial.println(F(" DOWN ARROW")); break;
-    case 0xFF6897: rv = 1   ;      Serial.println(F(" 1"));    break;
-    case 0xFF9867: rv = 2   ;      Serial.println(F(" 2"));    break;
-    case 0xFFB04F: rv = 3   ;      Serial.println(F(" 3"));    break;
-    case 0xFF30CF: rv = 4   ;      Serial.println(F(" 4"));    break;
-    case 0xFF18E7: rv = 5   ;      Serial.println(F(" 5"));    break;
-    case 0xFF7A85: rv = 6   ;      Serial.println(F(" 6"));    break;
-    case 0xFF10EF: rv = 7   ;      Serial.println(F(" 7"));    break;
-    case 0xFF38C7: rv = 8   ;      Serial.println(F(" 8"));    break;
-    case 0xFF5AA5: rv = 9   ;      Serial.println(F(" 9"));    break;
-    case 0xFF42BD: rv = -15 ;      Serial.println(F(" *"));    break;
-    case 0xFF4AB5: rv = 0   ;      Serial.println(F(" 0"));    break;
-    case 0xFF52AD: rv = -16 ;      Serial.println(F(" #"));    break;
-      //case 0xFFFFFFFF: rv = -20 ;  Serial.println(F(" REPEAT"));    break;
-  }
-
-  return rv ;
-}
-// IR end
-
- // IR
-  pinMode( irReceiver , INPUT_PULLUP ) ;
-  irrecv.enableIRIn(); // Start the receiver
-  // IR end
-
-
 void loop()                          // main loop services keystrokes
-{
-// IR
-  irKeyValue = -1 ;
-
-  if (irrecv.decode(&irResults))
-  {
-    irKeyValue = translateIR();
-
-    if ( irKeyValue != -1 ) {
-      Serial.println (F("\nValid Results detected") ) ;
-    }
-    else {
-      Serial.println (F("\nBad Results detected") ) ;
-    }
-
-    Serial.print( F("irResults.value: 0x") ) ;
-    Serial.print( irResults.value , HEX ) ;
-    Serial.print( F("; irKeyValue: ") ) ;
-    Serial.println( irKeyValue ) ;
-    
-    irrecv.resume();
-  }
-  // IR end
-}
 { 
   int exitflag;
   int numjogsteps;
@@ -278,6 +224,38 @@ void loop()                          // main loop services keystrokes
       break;  
   }                                           // end of mode switch
 }                                               // end of main loop
+
+// IR
+int translateIR() // takes action based on IR code received
+{
+  int rv = -1 ;     // assume failure
+
+  switch (irResults.value)
+  {
+    case 0xFF629D: rv = -10 ;      Serial.println(F(" UP_KEY")); break;
+    case 0xFF22DD: rv = -11 ;      Serial.println(F(" LEFT_KEY"));    break;
+    case 0xFF02FD: rv = -12 ;      Serial.println(F(" SELECT_KEY"));    break;
+    case 0xFFC23D: rv = -13 ;      Serial.println(F(" RIGHT_KEY"));   break;
+    case 0xFFA857: rv = -14 ;      Serial.println(F(" DOWN_KEY")); break;
+    case 0xFF6897: rv = 1   ;      Serial.println(F(" 1"));    break;
+    case 0xFF9867: rv = 2   ;      Serial.println(F(" 2"));    break;
+    case 0xFFB04F: rv = 3   ;      Serial.println(F(" 3"));    break;
+    case 0xFF30CF: rv = 4   ;      Serial.println(F(" 4"));    break;
+    case 0xFF18E7: rv = 5   ;      Serial.println(F(" 5"));    break;
+    case 0xFF7A85: rv = 6   ;      Serial.println(F(" 6"));    break;
+    case 0xFF10EF: rv = 7   ;      Serial.println(F(" 7"));    break;
+    case 0xFF38C7: rv = 8   ;      Serial.println(F(" 8"));    break;
+    case 0xFF5AA5: rv = 9   ;      Serial.println(F(" 9"));    break;
+    case 0xFF42BD: rv = -15 ;      Serial.println(F(" *"));    break;
+    case 0xFF4AB5: rv = 0   ;      Serial.println(F(" 0"));    break;
+    case 0xFF52AD: rv = -16 ;      Serial.println(F(" #"));    break;
+      //case 0xFFFFFFFF: rv = -20 ;  Serial.println(F(" REPEAT"));    break;
+  }
+
+  return rv ;
+}
+// IR end
+
 
 void dostepmode(int tmp_key)
 {
